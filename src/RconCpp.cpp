@@ -15,20 +15,49 @@ void print_bytes(std::ostream& out, const char* title, const unsigned char* data
 
 namespace RconCpp {
 
-    RconCpp::RconCpp(int32_t p_port, std::string p_ip) : port(p_port), ip(p_ip), socket(service), authenticated(false), id_inc(0)
+    RconCpp::RconCpp(int32_t p_port, std::string p_ip) : port(p_port), ip(p_ip), socket(service), authenticated(false), id_inc(0), connected(false)
     {
-        boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(p_ip), p_port);
 
-        socket.connect(endpoint);
     }
 
     RconCpp::~RconCpp()
     {
+        close();
+    }
+
+    void RconCpp::run(std::chrono::steady_clock::duration timeout)
+    {
+        // Restart the io_context, as it may have been left in the "stopped" state
+        // by a previous operation.
+        service.restart();
+
+        // Block until the asynchronous operation has completed, or timed out. If
+        // the pending asynchronous operation is a composed operation, the deadline
+        // applies to the entire operation, rather than individual operations on
+        // the socket.
+        service.run_for(timeout);
+
+        // If the asynchronous operation completed successfully then the io_context
+        // would have been stopped due to running out of work. If it was not
+        // stopped, then the io_context::run_for call must have timed out.
+        if (!service.stopped())
+        {
+            // Close the socket to cancel the outstanding asynchronous operation.
+            socket.close();
+
+            // Run the io_context again until the operation completes.
+            service.run();
+        }
     }
 
     // TODO: timeout throws
     void RconCpp::authenticate(std::string password)
     {
+        if (!connected) 
+        {
+            throw std::runtime_error("There is no connection to the server");
+        }
+
         pwd = password;
 
         send(0, SERVERDATA::SERVERDATA_AUTH, password.c_str());
@@ -40,7 +69,7 @@ namespace RconCpp {
         std::string received = recv(id, type);
         if (type != 2) 
         {
-            throw std::exception("password was not accepted");
+            throw std::runtime_error("Password is incorrect");
         }
 
         authenticated = true;
@@ -50,27 +79,53 @@ namespace RconCpp {
     {
         id = id_inc;
 
-        try
-        {
-            send(id_inc, SERVERDATA::SERVERDATA_EXECCOMMAND, cmd.c_str());
-        }
-        catch (std::exception e)
-        {
-            throw e;
-        }
-
+        send(id_inc, SERVERDATA::SERVERDATA_EXECCOMMAND, cmd.c_str());
     }
 
     std::string RconCpp::recvAnswer(int32_t& id)
     {
         int32_t type;
 
-        return recv(id, type);
+        try
+        {
+            return recv(id, type);
+        }
+        catch (const std::runtime_error e)
+        {
+            throw e;
+        }
     }
 
     void RconCpp::close()
     {
-        socket.close();
+        if (connected) 
+        {
+            socket.close();
+        }
+        connected = false;
+    }
+
+    void RconCpp::connect()
+    {
+        auto endpoints = boost::asio::ip::tcp::resolver(service).resolve(ip, std::to_string(port));
+
+        boost::system::error_code error;
+        boost::asio::async_connect(socket, endpoints,
+            [&](const boost::system::error_code& result_error,
+                const boost::asio::ip::tcp::endpoint& /*result_endpoint*/)
+            {
+                error = result_error;
+            });
+
+        run(std::chrono::seconds(5));
+
+        // Couldnt connect
+        if (error)
+        {
+            throw std::runtime_error("Cant connect to Server");
+        }
+
+        connected = true;
     }
 
     // TODO: timeout throws
@@ -105,7 +160,22 @@ namespace RconCpp {
         print_bytes(std::cout, body, (unsigned char*)buffer, groesse);
 #endif // _DEBUG
 
-        boost::asio::write(socket, boost::asio::buffer(buffer, groesse));
+        boost::system::error_code error;
+        boost::asio::async_write(socket, boost::asio::buffer(buffer, groesse),
+            [&](const boost::system::error_code& result_error,
+                std::size_t /*result_n*/)
+            {
+                error = result_error;
+            });
+
+        // Run the operation until it completes, or until the timeout.
+        run(std::chrono::seconds(5));
+
+        // Determine whether the read completed successfully.
+        if (error)
+        {
+            throw std::runtime_error("Timeout");
+        }
 
         delete[] buffer;
 
@@ -128,12 +198,44 @@ namespace RconCpp {
         memset(buf, 0, buf_size);   // Das vllt anders machen, da es unnötig performance zieht
 
         // read following Packet size
-        boost::asio::read(socket, boost::asio::buffer(buf, buf_size), boost::asio::transfer_exactly(4));
+        boost::system::error_code error;
+        boost::asio::async_read(socket, boost::asio::buffer(buf, buf_size), boost::asio::transfer_exactly(4),
+            [&](const boost::system::error_code& result_error,
+                std::size_t /*result_n*/)
+            {
+                error = result_error;
+            });
+
+        // Run the operation until it completes, or until the timeout.
+        run(std::chrono::seconds(5));
+
+        // Determine whether the read completed successfully.
+        if (error)
+        {
+            throw std::runtime_error("Timeout");
+        }
+
+
         int32_t size_len = *(reinterpret_cast<int32_t*>(buf));
 
         // read Packet
-        boost::asio::read(socket, boost::asio::buffer(buf + 4, buf_size - 4), boost::asio::transfer_exactly(size_len));
-        
+        boost::system::error_code error2;
+        boost::asio::async_read(socket, boost::asio::buffer(buf + 4, buf_size - 4), boost::asio::transfer_exactly(size_len),
+            [&](const boost::system::error_code& result_error,
+                std::size_t /*result_n*/)
+            {
+                error2 = result_error;
+            });
+
+        // Run the operation until it completes, or until the timeout.
+        run(std::chrono::seconds(5));
+
+        // Determine whether the read completed successfully.
+        if (error2)
+        {
+            throw std::runtime_error("Timeout");
+        }
+
         memcpy_s(&id, 4, buf + 4, 4);
         memcpy_s(&type, 4, buf + 8, 4);
 

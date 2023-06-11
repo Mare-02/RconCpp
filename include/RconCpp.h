@@ -3,7 +3,7 @@
 #include <iostream>
 #include "boost/asio.hpp"
 
-#include <exception>
+#include <stdexcept>
 
 #include <bit>
 #include <concepts>
@@ -34,6 +34,8 @@ public:
 
 	void close();
 
+	void connect();
+
 private:
 	int32_t port;
 	int32_t id_inc;
@@ -41,12 +43,15 @@ private:
 	std::string pwd;
 
 	bool authenticated;
+	bool connected;
 
-	boost::asio::io_service service;
+	boost::asio::io_context service;
 	boost::asio::ip::tcp::socket socket;
 
 	int send(int32_t id, int32_t type, const char* body);
 	std::string recv(int32_t& id, int32_t& type);
+
+	void run(std::chrono::steady_clock::duration timeout);
 };
 
 }
