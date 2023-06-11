@@ -29,11 +29,14 @@ public:
 
 	void authenticate(std::string password);
 
-	int send(boost::asio::ip::tcp::socket& Socket, int32_t id, int32_t type, const char* body);
-	std::string recv(boost::asio::ip::tcp::socket& Socket, int32_t &id, int32_t &type);
+	void sendCommand(std::string cmd, int32_t &id);
+	std::string recvAnswer(int32_t& id);
+
+	void close();
 
 private:
 	int32_t port;
+	int32_t id_inc;
 	std::string ip;
 	std::string pwd;
 
@@ -41,6 +44,9 @@ private:
 
 	boost::asio::io_service service;
 	boost::asio::ip::tcp::socket socket;
+
+	int send(int32_t id, int32_t type, const char* body);
+	std::string recv(int32_t& id, int32_t& type);
 };
 
 }
