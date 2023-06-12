@@ -1,5 +1,7 @@
 #include "RconCpp.h"
 
+
+#ifdef OUTPUT_DEBUG
 void print_bytes(std::ostream& out, const char* title, const unsigned char* data, size_t dataLen, bool format = true) {
     out << title << std::endl;
     out << std::setfill('0');
@@ -11,7 +13,7 @@ void print_bytes(std::ostream& out, const char* title, const unsigned char* data
     }
     out << std::endl;
 }
-
+#endif
 
 namespace RconCpp {
 
@@ -175,9 +177,9 @@ namespace RconCpp {
         // Ending Zeros
         memcpy_s(buffer+(4*3)+strlen(body), groesse, "\0\0", 2);
 
-#ifdef _DEBUG
+#ifdef OUTPUT_DEBUG
         print_bytes(std::cout, body, (unsigned char*)buffer, groesse);
-#endif // _DEBUG
+#endif // OUTPUT_DEBUG
 
         boost::system::error_code error;
         boost::asio::async_write(socket, boost::asio::buffer(buffer, groesse),
@@ -256,10 +258,10 @@ namespace RconCpp {
         memcpy_s(&id, 4, buf + 4, 4);
         memcpy_s(&type, 4, buf + 8, 4);
 
-#ifdef _DEBUG
+#ifdef OUTPUT_DEBUG
         print_bytes(std::cout, "response", (unsigned char*)buf, size_len + 4);
         std::cout << buf + 12 << std::endl;
-#endif // _DEBUG
+#endif // OUTPUT_DEBUG
 
         return std::string(buf + 12);
     }

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="example\SquadRcon.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\RconCpp.cpp" />
   </ItemGroup>

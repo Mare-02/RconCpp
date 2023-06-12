@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClCompile Include="src\RconCpp.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="example\SquadRcon.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\RconCpp.h" />

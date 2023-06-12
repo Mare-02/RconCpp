@@ -7,6 +7,8 @@
 #include <bit>
 #include <iomanip>
 
+//#define OUTPUT_DEBUG
+
 namespace RconCpp {
 
 enum SERVERDATA : int32_t {
