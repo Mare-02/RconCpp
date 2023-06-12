@@ -1,14 +1,10 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN
 #include <iostream>
 #include "boost/asio.hpp"
 
 #include <stdexcept>
 
 #include <bit>
-#include <concepts>
-#include <ostream>
-#include <type_traits>
 #include <iomanip>
 
 namespace RconCpp {
@@ -24,17 +20,46 @@ enum SERVERDATA : int32_t {
 class RconCpp
 {
 public:
+	/// <summary>
+	/// Constructer of the RCON class
+	/// </summary>
+	/// <param name="p_port">port of the server</param>
+	/// <param name="p_ip">ip address of the server</param>
 	RconCpp(int32_t p_port, std::string p_ip);
 	~RconCpp();
 
+	/// <summary>
+	/// Authenticate RCON
+	/// </summary>
+	/// <param name="password">RCON password</param>
 	void authenticate(std::string password);
-
-	void sendCommand(std::string cmd, int32_t &id);
-	std::string recvAnswer(int32_t& id);
-
+	
+	/// <summary>
+	/// Close the connection
+	/// </summary>
 	void close();
 
+	/// <summary>
+	/// Establish a connection to the server
+	/// </summary>
 	void connect();
+
+	/// <summary>
+	/// Use this Method to send and receive normal messages
+	/// </summary>
+	/// <param name="cmd">The Command you want to send</param>
+	/// <returns>The response or "error" when an error occured</returns>
+	std::string sendAndRecv(std::string cmd);
+
+	/// <summary>
+	/// This Method exposes an interface to thread this procedure of sending
+	/// </summary>
+	int sendCommand(std::string cmd, int32_t &id);
+
+	/// <summary>
+	/// This Method exposes an interface to thread this procedure of receiving
+	/// </summary>
+	std::string recvAnswer(int32_t& id);
 
 private:
 	int32_t port;
@@ -51,6 +76,7 @@ private:
 	int send(int32_t id, int32_t type, const char* body);
 	std::string recv(int32_t& id, int32_t& type);
 
+	// Timeout function
 	void run(std::chrono::steady_clock::duration timeout);
 };
 

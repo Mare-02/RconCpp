@@ -50,7 +50,6 @@ namespace RconCpp {
         }
     }
 
-    // TODO: timeout throws
     void RconCpp::authenticate(std::string password)
     {
         if (!connected) 
@@ -75,11 +74,20 @@ namespace RconCpp {
         authenticated = true;
     }
 
-    void RconCpp::sendCommand(std::string cmd, int32_t& id)
+    int RconCpp::sendCommand(std::string cmd, int32_t& id)
     {
         id = id_inc;
 
-        send(id_inc, SERVERDATA::SERVERDATA_EXECCOMMAND, cmd.c_str());
+        try
+        {
+            send(id_inc, SERVERDATA::SERVERDATA_EXECCOMMAND, cmd.c_str());
+        }
+        catch (const std::runtime_error e)
+        {
+            return -1;
+        }
+
+        return 0;
     }
 
     std::string RconCpp::recvAnswer(int32_t& id)
@@ -92,7 +100,7 @@ namespace RconCpp {
         }
         catch (const std::runtime_error e)
         {
-            throw e;
+            return std::string("error");
         }
     }
 
@@ -128,7 +136,18 @@ namespace RconCpp {
         connected = true;
     }
 
-    // TODO: timeout throws
+    std::string RconCpp::sendAndRecv(std::string cmd)
+    {
+        int32_t id = 0;
+
+        if (sendCommand(cmd, id) != 0) 
+        {
+            return std::string("error");
+        }
+
+        return recvAnswer(id);
+    }
+
     int RconCpp::send(int32_t id, int32_t type, const char* body)
     {
         int32_t groesse = 8 + strlen(body) + 2 + 4;
@@ -184,12 +203,10 @@ namespace RconCpp {
         {
             id_inc = 0;
         }
-        std::cout << id_inc << std::endl;
 
         return 0;
     }
 
-    // TODO: timeout throws
     std::string RconCpp::recv(int32_t& id, int32_t& type)
     {
         const size_t buf_size = 4096;
