@@ -4,8 +4,8 @@
 
 #include <stdexcept>
 
-#include <bit>
 #include <iomanip>
+#include <intrin.h>
 
 //#define OUTPUT_DEBUG
 
@@ -71,6 +71,8 @@ private:
 
 	bool authenticated;
 	bool connected;
+
+	bool big_endian = false;
 
 	boost::asio::io_context service;
 	boost::asio::ip::tcp::socket socket;

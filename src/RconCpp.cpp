@@ -15,11 +15,21 @@ void print_bytes(std::ostream& out, const char* title, const unsigned char* data
 }
 #endif
 
+bool is_big_endian(void)
+{
+    union {
+        uint32_t i;
+        char c[4];
+    } bint = { 0x01020304 };
+
+    return bint.c[0] == 1;
+}
+
 namespace RconCpp {
 
     RconCpp::RconCpp(int32_t p_port, std::string p_ip) : port(p_port), ip(p_ip), socket(service), authenticated(false), id_inc(0), connected(false)
     {
-
+        big_endian = is_big_endian();
     }
 
     RconCpp::~RconCpp()
@@ -161,14 +171,26 @@ namespace RconCpp {
 
         // Size of the Packet
         int32_t size_field = groesse-4;
+        if (big_endian) 
+        {
+            size_field = _byteswap_ulong(size_field);
+        }
         memcpy_s(buffer, groesse, &size_field, 4);
 
         // Id
         int32_t id_field = id;
+        if (big_endian)
+        {
+            id_field = _byteswap_ulong(id_field);
+        }
         memcpy_s(buffer + 4, groesse-4, &id_field, 4);
 
         // Type
         int32_t type_field = type;
+        if (big_endian)
+        {
+            type_field = _byteswap_ulong(type_field);
+        }
         memcpy_s(buffer + (4*2), groesse-(4*2), &type_field, 4);
 
         // Body
@@ -234,8 +256,11 @@ namespace RconCpp {
             throw std::runtime_error("Timeout");
         }
 
-
         int32_t size_len = *(reinterpret_cast<int32_t*>(buf));
+        if (big_endian)
+        {
+            size_len = _byteswap_ulong(*(reinterpret_cast<int32_t*>(buf)));
+        }
 
         // read Packet
         boost::system::error_code error2;
@@ -257,6 +282,11 @@ namespace RconCpp {
 
         memcpy_s(&id, 4, buf + 4, 4);
         memcpy_s(&type, 4, buf + 8, 4);
+        if (big_endian)
+        {
+            id = _byteswap_ulong(id);
+            type = _byteswap_ulong(type);
+        }
 
 #ifdef OUTPUT_DEBUG
         print_bytes(std::cout, "response", (unsigned char*)buf, size_len + 4);
