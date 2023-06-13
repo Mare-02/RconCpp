@@ -195,6 +195,7 @@ namespace RconCpp {
         // Determine whether the read completed successfully.
         if (error)
         {
+            delete[] buffer;
             throw std::runtime_error("Timeout");
         }
 
@@ -214,7 +215,7 @@ namespace RconCpp {
         const size_t buf_size = 4096;
 
         char buf[buf_size];
-        memset(buf, 0, buf_size);   // Das vllt anders machen, da es unnötig performance zieht
+        memset(buf, 0, buf_size);   // Das vllt anders machen, da es unnÃ¶tig performance zieht
 
         // read following Packet size
         boost::system::error_code error;
