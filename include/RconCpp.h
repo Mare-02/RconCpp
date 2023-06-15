@@ -63,6 +63,16 @@ public:
 	/// </summary>
 	std::string recvAnswer(int32_t& id);
 
+	/// <summary>
+	/// return true if the Server is connected
+	/// </summary>
+	bool isConnected() { return connected; }
+
+	/// <summary>
+	/// return true if the connection is authenticated
+	/// </summary>
+	bool isAuthenticated() { return authenticated; }
+
 private:
 	int32_t port;
 	int32_t id_inc;
