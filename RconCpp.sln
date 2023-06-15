@@ -9,6 +9,10 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		dllDebug|x64 = dllDebug|x64
+		dllDebug|x86 = dllDebug|x86
+		dllRelease|x64 = dllRelease|x64
+		dllRelease|x86 = dllRelease|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
@@ -17,6 +21,14 @@ Global
 		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.Debug|x64.Build.0 = Debug|x64
 		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.Debug|x86.ActiveCfg = Debug|Win32
 		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.Debug|x86.Build.0 = Debug|Win32
+		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.dllDebug|x64.ActiveCfg = dllDebug|Win32
+		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.dllDebug|x64.Build.0 = dllDebug|Win32
+		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.dllDebug|x86.ActiveCfg = dllDebug|Win32
+		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.dllDebug|x86.Build.0 = dllDebug|Win32
+		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.dllRelease|x64.ActiveCfg = dllRelease|x64
+		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.dllRelease|x64.Build.0 = dllRelease|x64
+		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.dllRelease|x86.ActiveCfg = dllRelease|Win32
+		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.dllRelease|x86.Build.0 = dllRelease|Win32
 		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.Release|x64.ActiveCfg = Release|x64
 		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.Release|x64.Build.0 = Release|x64
 		{38EDF68C-9CF8-4FD5-8A0C-4C772A2E9693}.Release|x86.ActiveCfg = Release|Win32
