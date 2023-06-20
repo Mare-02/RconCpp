@@ -62,9 +62,10 @@ namespace RconCpp {
         }
     }
 
+    // throws exception on failure
     void RconCpp::authenticate(std::string password)
     {
-        if (!connected) 
+        if (!connected)
         {
             throw std::runtime_error("There is no connection to the server");
         }
@@ -72,13 +73,16 @@ namespace RconCpp {
         pwd = password;
 
         send(0, SERVERDATA::SERVERDATA_AUTH, password.c_str());
-        
+
         int32_t id = 0;
         int32_t type = 0;
-        recv(id, type); // recv "shadow" packet
+        int32_t packet_size = 0;
+        recv(id, type, packet_size); // recv "shadow" packet
 
-        std::string received = recv(id, type);
-        if (type != 2) 
+        packet_size = 0;
+
+        std::string received = recv(id, type, packet_size);
+        if (type != 2)
         {
             throw std::runtime_error("Password is incorrect");
         }
@@ -102,13 +106,20 @@ namespace RconCpp {
         return 0;
     }
 
+    // returns "error" on failure
     std::string RconCpp::recvAnswer(int32_t& id)
     {
-        int32_t type;
+        int32_t type = 0;
+        int32_t packet_size = 0;
 
         try
         {
-            return recv(id, type);
+            std::string rueckgabe = recv(id, type, packet_size);
+            while (packet_size > 4000) 
+            {
+                rueckgabe += recv(id, type, packet_size);
+            }
+            return rueckgabe;
         }
         catch (const std::runtime_error e)
         {
@@ -118,7 +129,7 @@ namespace RconCpp {
 
     void RconCpp::close()
     {
-        if (connected) 
+        if (connected)
         {
             socket.close();
         }
@@ -152,7 +163,7 @@ namespace RconCpp {
     {
         int32_t id = 0;
 
-        if (sendCommand(cmd, id) != 0) 
+        if (sendCommand(cmd, id) != 0)
         {
             return std::string("error");
         }
@@ -170,8 +181,8 @@ namespace RconCpp {
         // TODO: wenn mehr als 4096 bytes gesendet werden, wird das Protokoll anders
 
         // Size of the Packet
-        int32_t size_field = groesse-4;
-        if (big_endian) 
+        int32_t size_field = groesse - 4;
+        if (big_endian)
         {
             size_field = _byteswap_ulong(size_field);
         }
@@ -183,7 +194,7 @@ namespace RconCpp {
         {
             id_field = _byteswap_ulong(id_field);
         }
-        memcpy_s(buffer + 4, groesse-4, &id_field, 4);
+        memcpy_s(buffer + 4, groesse - 4, &id_field, 4);
 
         // Type
         int32_t type_field = type;
@@ -191,13 +202,13 @@ namespace RconCpp {
         {
             type_field = _byteswap_ulong(type_field);
         }
-        memcpy_s(buffer + (4*2), groesse-(4*2), &type_field, 4);
+        memcpy_s(buffer + (4 * 2), groesse - (4 * 2), &type_field, 4);
 
         // Body
-        memcpy_s(buffer + (4*3), groesse-(4*3), body, strlen(body));
+        memcpy_s(buffer + (4 * 3), groesse - (4 * 3), body, strlen(body));
 
         // Ending Zeros
-        memcpy_s(buffer+(4*3)+strlen(body), groesse, "\0\0", 2);
+        memcpy_s(buffer + (4 * 3) + strlen(body), groesse, "\0\0", 2);
 
 #ifdef OUTPUT_DEBUG
         print_bytes(std::cout, body, (unsigned char*)buffer, groesse);
@@ -232,12 +243,12 @@ namespace RconCpp {
         return 0;
     }
 
-    std::string RconCpp::recv(int32_t& id, int32_t& type)
+    std::string RconCpp::recv(int32_t& id, int32_t& type, int32_t& packet_size)
     {
         const size_t buf_size = 4096;
 
         char buf[buf_size];
-        memset(buf, 0, buf_size);   // Das vllt anders machen, da es unnÃ¶tig performance zieht
+        memset(buf, 0, buf_size);   // Das vllt anders machen, da es unnötig performance zieht
 
         // read following Packet size
         boost::system::error_code error;
@@ -258,6 +269,7 @@ namespace RconCpp {
         }
 
         int32_t size_len = *(reinterpret_cast<int32_t*>(buf));
+        packet_size = size_len;
         if (big_endian)
         {
             size_len = _byteswap_ulong(*(reinterpret_cast<int32_t*>(buf)));

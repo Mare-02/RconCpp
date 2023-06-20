@@ -31,7 +31,7 @@ public:
 	~RconCpp();
 
 	/// <summary>
-	/// Authenticate RCON
+	/// Authenticate RCON, throws exception on failure
 	/// </summary>
 	/// <param name="password">RCON password</param>
 	void authenticate(std::string password);
@@ -74,7 +74,7 @@ public:
 	bool isAuthenticated() { return authenticated; }
 
 	int send(int32_t id, int32_t type, const char* body);
-	std::string recv(int32_t& id, int32_t& type);
+	std::string recv(int32_t& id, int32_t& type, int32_t& packet_size);
 private:
 	int32_t port;
 	int32_t id_inc;
