@@ -45,4 +45,4 @@ std::cout << players << std::endl;
 ```
 
 # Multiple-packet Responses
-Not implemented but if you really have answers bigger than 4096 then you can easily implement it yourself
+Supports multi-packet responses. This process activates automatically
