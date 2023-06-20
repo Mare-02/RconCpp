@@ -106,25 +106,18 @@ namespace RconCpp {
         return 0;
     }
 
-    // returns "error" on failure
+    // returns empty String on failure
     std::string RconCpp::recvAnswer(int32_t& id)
     {
         int32_t type = 0;
         int32_t packet_size = 0;
 
-        try
+        std::string rueckgabe = recv(id, type, packet_size);
+        while (packet_size > 4000) 
         {
-            std::string rueckgabe = recv(id, type, packet_size);
-            while (packet_size > 4000) 
-            {
-                rueckgabe += recv(id, type, packet_size);
-            }
-            return rueckgabe;
+            rueckgabe += recv(id, type, packet_size);
         }
-        catch (const std::runtime_error e)
-        {
-            return std::string("error");
-        }
+        return rueckgabe;
     }
 
     void RconCpp::close()
@@ -235,8 +228,8 @@ namespace RconCpp {
 
         delete[] buffer;
 
-        id_inc++;
-        if (id_inc >= 15)
+        id_inc = id_inc + 1;
+        if (id_inc >= 1000)
         {
             id_inc = 0;
         }
@@ -266,7 +259,7 @@ namespace RconCpp {
         // Determine whether the read completed successfully.
         if (error)
         {
-            throw std::runtime_error("Timeout");
+            return "";
         }
 
         int32_t size_len = *(reinterpret_cast<int32_t*>(buf));
@@ -291,7 +284,7 @@ namespace RconCpp {
         // Determine whether the read completed successfully.
         if (error2)
         {
-            throw std::runtime_error("Timeout");
+            return "";
         }
 
         memcpy_s(&id, 4, buf + 4, 4);
