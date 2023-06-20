@@ -77,7 +77,6 @@ public:
 
 	/// throws exceptions
 	int send(int32_t id, int32_t type, const char* body);
-	/// throws exceptions
 	std::string recv(int32_t& id, int32_t& type, int32_t& packet_size);
 private:
 	int32_t port;
