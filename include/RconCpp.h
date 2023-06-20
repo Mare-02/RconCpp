@@ -31,7 +31,7 @@ public:
 	~RconCpp();
 
 	/// <summary>
-	/// Authenticate RCON, throws exception on failure
+	/// Authenticate RCON, throws std::runtime_error on failure
 	/// </summary>
 	/// <param name="password">RCON password</param>
 	void authenticate(std::string password);
@@ -42,7 +42,7 @@ public:
 	void close();
 
 	/// <summary>
-	/// Establish a connection to the server
+	/// Establish a connection to the server, throws std::runtime_error on failure
 	/// </summary>
 	void connect();
 
@@ -56,11 +56,13 @@ public:
 	/// <summary>
 	/// This Method exposes an interface to thread this procedure of sending
 	/// </summary>
+	/// <returns>-1 on failure</returns>
 	int sendCommand(std::string cmd, int32_t &id);
 
 	/// <summary>
 	/// This Method exposes an interface to thread this procedure of receiving
 	/// </summary>
+	/// <returns>returns "error" on failure or at a success the payload</returns>
 	std::string recvAnswer(int32_t& id);
 
 	/// <summary>
@@ -73,7 +75,9 @@ public:
 	/// </summary>
 	bool isAuthenticated() { return authenticated; }
 
+	/// throws exceptions
 	int send(int32_t id, int32_t type, const char* body);
+	/// throws exceptions
 	std::string recv(int32_t& id, int32_t& type, int32_t& packet_size);
 private:
 	int32_t port;

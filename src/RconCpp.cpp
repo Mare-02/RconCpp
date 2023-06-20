@@ -159,6 +159,7 @@ namespace RconCpp {
         connected = true;
     }
 
+    // return "error on failure"
     std::string RconCpp::sendAndRecv(std::string cmd)
     {
         int32_t id = 0;
