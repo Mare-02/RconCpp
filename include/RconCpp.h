@@ -73,6 +73,8 @@ public:
 	/// </summary>
 	bool isAuthenticated() { return authenticated; }
 
+	int send(int32_t id, int32_t type, const char* body);
+	std::string recv(int32_t& id, int32_t& type);
 private:
 	int32_t port;
 	int32_t id_inc;
@@ -86,9 +88,6 @@ private:
 
 	boost::asio::io_context service;
 	boost::asio::ip::tcp::socket socket;
-
-	int send(int32_t id, int32_t type, const char* body);
-	std::string recv(int32_t& id, int32_t& type);
 
 	// Timeout function
 	void run(std::chrono::steady_clock::duration timeout);
