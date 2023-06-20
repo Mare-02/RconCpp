@@ -43,3 +43,6 @@ You can now use the sendAndRecv() function to send commands and receive the answ
 std::string players = rcon.sendAndRecv("listplayers");
 std::cout << players << std::endl;
 ```
+
+# Multiple-packet Responses
+Not implemented but if you really have answers bigger than 4096 then you can easily implement it yourself
