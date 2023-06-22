@@ -65,6 +65,8 @@ namespace RconCpp {
     // throws exception on failure
     void RconCpp::authenticate(std::string password)
     {
+        authenticated = false;
+
         if (!connected)
         {
             throw std::runtime_error("There is no connection to the server");

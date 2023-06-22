@@ -35,7 +35,7 @@ public:
 	/// </summary>
 	/// <param name="password">RCON password</param>
 	void authenticate(std::string password);
-	
+
 	/// <summary>
 	/// Close the connection
 	/// </summary>
