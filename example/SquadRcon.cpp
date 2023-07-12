@@ -7,7 +7,7 @@ int main()
 	std::string ip = "127.0.0.1";	// Enter the ip address of the server
 	std::string rcon_pwd = "YourPassword";
 
-	RconCpp::RconCpp rcon(port, ip);
+	RCONCPP::RconCpp rcon(port, ip);
 
 	try
 	{
