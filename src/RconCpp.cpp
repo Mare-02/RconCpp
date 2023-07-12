@@ -26,7 +26,7 @@ namespace RCONCPP
         return bint.c[0] == 1;
     }
 
-    RconCpp::RconCpp(int32_t p_port, std::string p_ip) : port(p_port), ip(p_ip), socket(service), authenticated(false), id_inc(0), connected(false)
+    RconCpp::RconCpp(int32_t p_port, std::string p_ip, unsigned pTimeout) : port(p_port), ip(p_ip), socket(service), authenticated(false), id_inc(0), connected(false), timeout(pTimeout)
     {
         big_endian = is_big_endian();
     }
@@ -145,7 +145,7 @@ namespace RCONCPP
                 error = result_error;
             });
 
-        run(std::chrono::seconds(5));
+        run(std::chrono::seconds(timeout));
 
         // Couldnt connect
         if (error)
@@ -219,7 +219,7 @@ namespace RCONCPP
             });
 
         // Run the operation until it completes, or until the timeout.
-        run(std::chrono::seconds(5));
+        run(std::chrono::seconds(timeout));
 
         // Determine whether the read completed successfully.
         if (error)
@@ -256,7 +256,7 @@ namespace RCONCPP
             });
 
         // Run the operation until it completes, or until the timeout.
-        run(std::chrono::seconds(5));
+        run(std::chrono::seconds(timeout));
 
         // Determine whether the read completed successfully.
         if (error)
@@ -281,7 +281,7 @@ namespace RCONCPP
             });
 
         // Run the operation until it completes, or until the timeout.
-        run(std::chrono::seconds(5));
+        run(std::chrono::seconds(timeout));
 
         // Determine whether the read completed successfully.
         if (error2)

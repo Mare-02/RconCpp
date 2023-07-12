@@ -6,8 +6,10 @@ int main()
 	int32_t port = 21115;	// Enter the RCON port
 	std::string ip = "127.0.0.1";	// Enter the ip address of the server
 	std::string rcon_pwd = "YourPassword";
+	unsigned timeout = 10;	// in seconds
 
-	RCONCPP::RconCpp rcon(port, ip);
+	// timeout is optional. default = 5
+	RCONCPP::RconCpp rcon(port, ip, timeout);
 
 	try
 	{

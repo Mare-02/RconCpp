@@ -31,7 +31,8 @@ public:
 	/// </summary>
 	/// <param name="p_port">port of the server</param>
 	/// <param name="p_ip">ip address of the server</param>
-	RconCpp(int32_t p_port, std::string p_ip);
+	/// <param name="pTimeout">the time to wait for a response. Default 5</param>
+	RconCpp(int32_t p_port, std::string p_ip, unsigned pTimeout=5);
 	~RconCpp();
 
 	/// <summary>
@@ -96,6 +97,8 @@ private:
 	bool connected;
 
 	bool big_endian = false;
+
+	unsigned timeout;
 
 	boost::asio::io_context service;
 	boost::asio::ip::tcp::socket socket;
