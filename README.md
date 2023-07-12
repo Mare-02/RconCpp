@@ -5,7 +5,7 @@ I coded this simple Source RCON API for c++. It uses boost asio so you can run i
 # Example
 You can create a Rcon object via this example:
 ```
-RconCpp::RconCpp rcon(port, ip);
+RCONCPP::RconCpp rcon(port, ip);
 ```
 Just pass the port and ip.
 
