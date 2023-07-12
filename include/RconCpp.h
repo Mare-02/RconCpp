@@ -66,7 +66,7 @@ public:
 	/// <summary>
 	/// This Method exposes an interface to thread this procedure of receiving
 	/// </summary>
-	/// <returns>returns "error" on failure or at a success the payload</returns>
+	/// <returns>returns empty string on failure or at a success the payload</returns>
 	std::string recvAnswer(int32_t& id);
 
 	/// <summary>
@@ -79,8 +79,12 @@ public:
 	/// </summary>
 	bool isAuthenticated() { return authenticated; }
 
-	/// throws exceptions
+	/// throws exceptions on timeout
+	/// return 0 on success
 	int send(int32_t id, int32_t type, const char* body);
+
+	/// returns empty string on failure
+	/// returns payload on success
 	std::string recv(int32_t& id, int32_t& type, int32_t& packet_size);
 private:
 	int32_t port;
