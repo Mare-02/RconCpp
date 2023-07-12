@@ -13,7 +13,7 @@
 // uncomment this if you experience an error while authentication
 //#define AUTH_ERROR
 
-namespace RconCpp {
+namespace RCONCPP {
 
 enum SERVERDATA : int32_t {
 	SERVERDATA_AUTH = 3,

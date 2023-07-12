@@ -1,31 +1,30 @@
 #include "RconCpp.h"
 
-
-#ifdef OUTPUT_DEBUG
-void print_bytes(std::ostream& out, const char* title, const unsigned char* data, size_t dataLen, bool format = true) {
-    out << title << std::endl;
-    out << std::setfill('0');
-    for (size_t i = 0; i < dataLen; ++i) {
-        out << std::hex << std::setw(2) << (int)data[i];
-        if (format) {
-            out << (((i + 1) % 16 == 0) ? "\n" : " ");
-        }
-    }
-    out << std::endl;
-}
-#endif
-
-bool is_big_endian(void)
+namespace RCONCPP 
 {
-    union {
-        uint32_t i;
-        char c[4];
-    } bint = { 0x01020304 };
+    #ifdef OUTPUT_DEBUG
+    void print_bytes(std::ostream& out, const char* title, const unsigned char* data, size_t dataLen, bool format = true) {
+        out << title << std::endl;
+        out << std::setfill('0');
+        for (size_t i = 0; i < dataLen; ++i) {
+            out << std::hex << std::setw(2) << (int)data[i];
+            if (format) {
+                out << (((i + 1) % 16 == 0) ? "\n" : " ");
+            }
+        }
+        out << std::endl;
+    }
+    #endif
+    
+    bool is_big_endian(void)
+    {
+        union {
+            uint32_t i;
+            char c[4];
+        } bint = { 0x01020304 };
 
-    return bint.c[0] == 1;
-}
-
-namespace RconCpp {
+        return bint.c[0] == 1;
+    }
 
     RconCpp::RconCpp(int32_t p_port, std::string p_ip) : port(p_port), ip(p_ip), socket(service), authenticated(false), id_inc(0), connected(false)
     {
@@ -176,8 +175,6 @@ namespace RconCpp {
 
         char* buffer = new char[groesse];
         memset(buffer, '\0', groesse);
-
-        // TODO: wenn mehr als 4096 bytes gesendet werden, wird das Protokoll anders
 
         // Size of the Packet
         int32_t size_field = groesse - 4;
