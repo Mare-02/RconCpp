@@ -7,7 +7,11 @@
 #include <iomanip>
 #include <intrin.h>
 
+// uncomment to get more insight into the buffers used in the rcon protocol
 //#define OUTPUT_DEBUG
+
+// uncomment this if you experience an error while authentication
+//#define AUTH_ERROR
 
 namespace RconCpp {
 

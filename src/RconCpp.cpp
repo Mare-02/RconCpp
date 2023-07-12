@@ -79,7 +79,10 @@ namespace RconCpp {
         int32_t id = 0;
         int32_t type = 0;
         int32_t packet_size = 0;
+
+#ifdef AUTH_ERROR
         recv(id, type, packet_size); // recv "shadow" packet
+#endif
 
         packet_size = 0;
 

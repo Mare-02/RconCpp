@@ -46,3 +46,6 @@ std::cout << players << std::endl;
 
 # Multiple-packet Responses
 Supports multi-packet responses. This process activates automatically
+
+# Error while authentication
+Some Server receive some sort of "shadow" packet before the authentication. If your authentication is blocking and not terminating, uncomment '#define AUTH_ERROR' in RconCpp.h
