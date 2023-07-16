@@ -7,6 +7,9 @@
 #include <iomanip>
 #include <intrin.h>
 
+#ifndef RCONCPP_H
+#define RCONCPP_H
+
 // uncomment to get more insight into the buffers used in the rcon protocol
 //#define OUTPUT_DEBUG
 
@@ -108,3 +111,4 @@ private:
 };
 
 }
+#endif
