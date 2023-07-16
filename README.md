@@ -5,8 +5,9 @@ I coded this simple Source RCON API for c++. It uses boost asio so you can run i
 # Example
 You can create a Rcon object via this example:
 ```
-RCONCPP::RconCpp rcon(port, ip);
+RCONCPP::RconCpp rcon(port, ip, timeout);
 ```
+The timeout is the time in seconds the code waits on a response before exiting with a failure. (optional, default = 5)
 Just pass the port and ip.
 
 To establish the Rcon connection, use the connect() function.
@@ -48,4 +49,4 @@ std::cout << players << std::endl;
 Supports multi-packet responses. This process activates automatically
 
 # Error while authentication
-Some Server receive some sort of "shadow" packet before the authentication. If your authentication is blocking and not terminating, uncomment '#define AUTH_ERROR' in RconCpp.h
+Some servers receive some sort of "shadow" packet before the authentication. If your authentication is blocking and not terminating, uncomment '#define AUTH_ERROR' in RconCpp.h
